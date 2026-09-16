@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小新团队-打造有趣的服务器</title>
+    <style>
+        /* 基础重置 */
+        @font-face {
+            font-family: 'GNUUnifont';
+            src: url('https://xtmc.neocities.org/GNUUnifont9FullHintInstrUCSUR.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'GNUUnifont', Helvetica, Arial, sans-serif;
+            /* 使用一张深色的森林图片作为背景，模拟截图氛围 */
+            background-image: url('https://ts3.tc.mm.bing.net/th/id/OIP-C.5VlhdAbHImPvzdsNx26XCQHaEK?rs=1&pid=ImgDetMain&o=7&rm=3');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: white;
+            height: 100vh;
+            position: relative;
+        }
+
+        /* 背景遮罩：为了让文字更清晰，在背景上加一层深色半透明蒙版 */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* 模拟截图中的暗调氛围 */
+            background: rgba(15, 25, 15, 0.6);
+            z-index: 0;
+        }
+
+        /* 导航栏样式 */
+        nav {
+            position: relative; /* 确保在遮罩之上 */
+            z-index: 10;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 80px;
+            /* 截图中的导航栏有一条底部的细线 */
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            background: transparent;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 300;
+            letter-spacing: 4px;
+            display: flex;
+            align-items: center;
+        }
+
+        /* 模拟Logo图标 */
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #ff8c00 0%, #ff0000 100%);
+            margin-right: 15px;
+            clip-path: polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%);
+            opacity: 0.9;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 35px;
+            font-size: 14px;
+            font-weight: 300;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: #ff8c00; /* 悬停时变橙色 */
+        }
+
+        /* 简单的下拉箭头模拟 */
+        .has-dropdown::after {
+            content: '▾';
+            font-size: 10px;
+            margin-left: 5px;
+            vertical-align: middle;
+            opacity: 0.7;
+        }
+
+        /* 主要内容区域 */
+        main {
+            position: relative;
+            z-index: 10;
+            padding: 100px 80px;
+            max-width: 800px;
+            margin-top: 40px;
+        }
+
+        h1 {
+            font-size: 80px;
+            line-height: 1.1;
+            font-weight: 500;
+            margin-bottom: 20px;
+            letter-spacing: -1px;
+        }
+
+        p.subtitle {
+            font-size: 28px;
+            font-weight: 300;
+            margin-bottom: 40px;
+            line-height: 1.4;
+            opacity: 0.9;
+        }
+
+        /* 按钮样式 */
+        .btn-primary {
+            display: inline-block;
+            padding: 15px 35px;
+            border: 1px solid #ff8c00; /* 橙色边框 */
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 50px; /* 圆角按钮 */
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #ff8c00; /* 悬停填充橙色 */
+            color: white;
+            box-shadow: 0 0 15px rgba(255, 140, 0, 0.4);
+        }
+
+        /* 响应式设计：手机端适配 */
+        @media (max-width: 768px) {
+            nav {
+                flex-direction: column;
+                padding: 20px;
+                gap: 20px;
+            }
+            .nav-links {
+                gap: 20px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            main {
+                padding: 20px;
+                text-align: center;
+                margin-top: 20px;
+            }
+            h1 {
+                font-size: 48px;
+            }
+            p.subtitle {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 导航栏 -->
+    <nav>
+        <div class="logo">
+            XT Server 小新服务器
+        </div>
+        <div class="nav-links">
+            <a href="https://xtmc.neocities.org/recharge">赞助支持</a>
+            <a href="https://xtmc.neocities.org/service">客服</a>
+            <a href="https://xtmc.neocities.org/politics">用户协议</a>
+            <a href="https://xtmc.neocities.org/news">最新活动</a>
+            <a href="https://xtmc.neocities.org/guild">公会建立</a>
+            <a href="https://qm.qq.com/q/yu9jwul9ok">加入矿域纪元QQ群</a>
+        </div>
+    </nav>
+
+    <!-- 主要内容 -->
+    <main>
+        <h1>打造有趣的服务器</h1>
+        <p class="subtitle">运营 网易矿域纪元 服务器</p>
+    </main>
+
+</body>
+</html>
