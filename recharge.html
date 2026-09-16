@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>矿域纪元服务器赞助表</title>
+    <style>
+        /* 引入指定字体 */
+        @font-face {
+            font-family: 'GNUUnifont';
+            src: url('https://xtmc.neocities.org/GNUUnifont9FullHintInstrUCSUR.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        /* 全局样式重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'GNUUnifont', monospace;
+            background-color: #f8f9fa;
+            padding: 40px;
+            line-height: 1.8;
+            padding-bottom: 80px;
+        }
+
+        /* —————— 顶部弹幕展示板 16:9 白底黑框 —————— */
+        .board-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto 30px;
+            aspect-ratio: 16 / 3;
+            background: #ffffff;
+            border: 2px solid #000;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 8px rgba(0,0,0,0.1);
+        }
+
+        /* 单条弹幕样式：黑字、从左向右、随机高度 */
+        .danmaku {
+            position: absolute;
+            white-space: nowrap;
+            color: #000;
+            font-size: 18px;
+            font-weight: bold;
+            pointer-events: none;
+            will-change: transform;
+            left: 0;
+            transform: translateX(-100%);
+        }
+
+        /* 稿纸容器 */
+        .paper-container {
+            width: 800px;
+            margin: 0 auto;
+            padding: 50px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            /* 稿纸格纹背景 */
+            background-image: 
+                linear-gradient(#e0e0e0AA 1px, transparent 1px),
+                linear-gradient(90deg, #e0e0e0AA 1px, transparent 1px);
+            background-size: 25px 25px; /* 稿纸格子大小 */
+            min-height: 1000px;
+        }
+
+        /* 一级标题样式（大字居中） */
+        .main-title {
+            font-size: 36px;
+            text-align: center;
+            margin-bottom: 40px;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        /* 二级标题样式（较大字居左） */
+        .sub-title {
+            font-size: 24px;
+            text-align: left;
+            margin: 30px 0 15px 0;
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* 分割线样式 */
+        .divider {
+            height: 2px;
+            background-color: #666;
+            margin: 20px 0;
+            border: none;
+        }
+
+        /* 商品卡片样式 - 修复布局 */
+        .product-card {
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 2px solid black;
+            position: relative;
+            min-height: 140px;
+        }
+
+        .product-name {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .product-content {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 25px; /* 给底部按钮和价格留出空间 */
+            line-height: 1.6;
+        }
+
+        .product-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+
+        .product-price {
+            font-size: 16px;
+            font-weight: bold;
+            color: black;
+        }
+
+        /* 购买按钮 */
+        .buy-btn {
+            padding: 4px 10px;
+            border: 2px solid #000;
+            background: #fff;
+            font-family: 'GNUUnifont', monospace;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            user-select: none;
+        }
+        .buy-btn:hover {
+            background: #000;
+            color: #fff;
+        }
+        .buy-btn.disabled {
+            opacity: 0.5;
+            cursor: default;
+        }
+
+        /* 折扣价格样式 */
+        .original-price {
+            font-size: 14px;
+            color: #333;
+            text-decoration: line-through;
+            margin-right: 8px;
+        }
+        .discount-price {
+            font-size: 16px;
+            color: #00a800;
+            font-weight: bold;
+        }
+        .discount-end-time {
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            font-size: 12px;
+            color: #ff4444;
+            font-weight: bold;
+        }
+
+        /* 购物车底部栏 */
+        .cart-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #fff;
+            border-top: 2px solid #000;
+            padding: 10px 20px;
+            display: none;
+            z-index: 999;
+        }
+        .cart-bar.show {
+            display: block;
+        }
+        .cart-inner {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .cart-title {
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .cart-list {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .cart-item {
+            padding: 3px 8px;
+            border: 2px solid #000;
+            font-size: 12px;
+            background: #fff;
+            cursor: pointer;
+            position: relative;
+        }
+        .cart-total {
+            font-weight: bold;
+            font-size: 16px;
+            white-space: nowrap;
+        }
+        .cart-desc {
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
+        /* 结算按钮 */
+        .checkout-btn {
+            margin-left: 15px;
+            padding: 3px 12px;
+            border: 2px solid #000;
+            background: #000;
+            color: #fff;
+            font-family: 'GNUUnifont', monospace;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .checkout-btn:hover {
+            background: #fff;
+            color: #000;
+        }
+
+        /* 订单弹窗遮罩 */
+        .order-mask {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 9999;
+            display: none;
+        }
+        .order-mask.show {
+            display: block;
+        }
+        /* 订单弹窗主体 */
+        .order-popup {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            background: #fff;
+            border: 2px solid #000;
+            padding: 30px;
+        }
+        /* 关闭按钮 */
+        .order-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .order-title {
+            font-size: 22px;
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 16px;
+            padding: 6px 0;
+        }
+        .order-line {
+            height: 1px;
+            background: #000;
+            margin: 15px 0;
+        }
+        .order-total {
+            display: flex;
+            justify-content: space-between;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        /* VIP权益列表样式 */
+        .vip-perks-list {
+            list-style-type: "·";
+            padding-left: 2em;
+            margin-top: 10px;
+            margin-bottom: 15px;
+        }
+
+        .vip-perks-list li {
+            margin-bottom: 5px;
+        }
+
+        /* 响应式适配 */
+        @media (max-width: 850px) {
+            .board-container {
+                max-width: 100%;
+            }
+            .paper-container {
+                width: 100%;
+                padding: 30px;
+            }
+            .main-title {
+                font-size: 30px;
+            }
+            .sub-title {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- —————— 顶部弹幕展示板（16:9 白底黑框）—————— -->
+<div class="board-container" id="board"></div>
+
+<!-- —————— 原有内容 —————— -->
+<div class="paper-container">
+    <h1 class="main-title">矿域纪元服务器 充值赞助表</h1>
+    <hr class="divider">
+    <p class="sub-title">充值请加wx:yjsy233|官方QQ交流群1082728601</p>
+    <hr class="divider">
+    <p>购买即视为同意<a href="https://xtmc.neocities.org/politics">本服用户协议</a></p>
+    <hr class="divider">
+    <div class="product-card">
+        <div class="product-name">购买体验调查问卷</div>
+        <div class="product-content">参与即可凭完成界面领取1000金币<br>
+                    <a href="https://v.wjx.cn/vm/mlfs6bo.aspx# ">问卷直链</a>
+        </div>
+        <div class="product-footer">
+            <div></div>
+            <div class="product-price" data-original-price="0.0">0.0¥</div>
+        </div>
+    </div>
+    <div class="product-card">
+        <div class="product-name">为什么购买我们的服务</div>
+        <div class="product-content">        
+            【比其他同类型服务器更优惠的价格】<br>
+            【更多的优惠券与常规优惠】<br>
+            【不断增加的权益,而你无需额外付费】<br>
+            【内购有保障,不满意客服可随时更换支付方案】<br>
+            【不跑路,不圈钱,保障游玩体验】<br>
+        </div>
+        <div class="product-footer">
+            <div></div>
+            <div class="product-price" data-original-price="0.0">0.0¥</div>
+        </div>
+    </div>
+    <h2 class="sub-title">新手推荐</h2>
+
+    <div class="product-card">
+        <div class="product-name">新人矿工礼包【限购一次】</div>
+        <div class="product-content">包含：【金币x50000】【4阶-星陨矿镐x1】</div>
+        <div class="product-footer">
+            <button class="buy-btn" data-name="新人矿工礼包" data-price="9.9">购买</button>
+            <div class="product-price" data-original-price="9.9">9.9¥</div>
+        </div>
+    </div>
+    <div class="product-card">
+        <div class="product-name">进阶矿工礼包【限购一次】</div>
+        <div class="product-content">包含：【金币x180000】【5阶-神谕矿镐x1】</div>
+        <div class="product-footer">
+            <button class="buy-btn" data-name="进阶矿工礼包" data-price="29.9">购买</button>
+            <div class="product-price" data-original-price="29.9">29.9¥</div>
+        </div>
+    </div>
+
+    <hr class="divider">
+    <h2 class="sub-title">VIP</h2>
+    <div class="product-card" data-category="VIP">
+        <div class="product-name">VIP1</div>
+        <div class="product-content">
+            【VIP1下界石英矿区解锁】<br>
+            【VIP1专属头顶称号】<br>
+            【VIP1专属进服提醒】<br>
+            【永久急迫III】<br>
+            【尊贵的VIP徽章解锁】<br>
+            【金币x100000】<br>
+            【赠送100晶核源点】
+        </div>
+        <div class="product-footer">
+            <button class="buy-btn" data-name="VIP1" data-price="35.9">购买</button>
+            <div class="product-price" data-original-price="35.9">35.9¥</div>
+        </div>
+    </div>
+    <div class="product-card" data-category="VIP">
+        <div class="product-name">VIP1→VIP2</div>
+        <div class="product-content">
+            【包含VIP1全部特权】<br>
+            【VIP2专属头顶称号】<br>
+            【VIP2专属进服提醒】<br>
+            【永久抗性提升II】<br>
+            【永久力量II】<br>
+            【满附魔下界合金剑x1】<br>
+            【金币x200000】<br>
+            【赠送150晶核源点(如有VIP1则加送数量为50)】
+        </div>
+        <div class="product-footer">
+            <button class="buy-btn" data-name="VIP1→VIP2" data-price="49.9">购买</button>
+            <div class="product-price" data-original-price="49.9">49.9¥</div>
+        </div>
+    </div>
+    <div class="product-card" data-category="VIP">
+        <div class="product-name">VIP2→VIP3</div>
+        <div class="product-content">
+            【包含VIP2全部特权】<br>
+            【VIP3黑曜石矿区解锁】<br>
+            【VIP3专属头顶称号】<br>
+            【VIP3专属进服提醒】<br>
+            【永久力量III】<br>
+            【VIP3专属下界合金镐x1】<br>
+            【永久急迫V】<br>
+            【金币x300000】<br>
+            【赠送200晶核源点(如有VIP2则加送数量为50)】
+        </div>
+        <div class="product-footer">
+            <button class="buy-btn" data-name="VIP2→VIP3" data-price="65.9">购买</button>
+            <div class="product-price" data-original-price="65.9">65.9¥</div>
+        </div>
+    </div>
+    <div class="product-card" data-category="VIP">
+        <div class="product-name">VIP3→VIP4</div>
+        <div class="product-content">
+            【包含VIP3全部特权】<br>
+            【VIP4专属头顶称号】<br>
+            【VIP4专属进服提醒】<br>
+            【永久力量III】<br>
+            【永久抗性提升III】<br>
+            【全套保护IV下界合金套】<br>
+            【9.9赠送VIP1权益解锁】<br>
+            【金币x500000】<br>
+            【赠送300晶核源点(如有VIP3则加送数量为100)】
+        </div>
+        <div class="product-footer">
+            <button class="buy-btn" data-name="VIP3→VIP4" data-price="79.9">购买</button>
+            <div class="product-price" data-original-price="79.9">79.9¥</div>
+        </div>
+    </div>
+    <div class="product-card" data-category="VIP">
+        <div class="product-name">VIP4→VIP5</div>
+        <div class="product-content">
+            【包含VIP4全部特权】<br>
+            【VIP5专属头顶称号】<br>
+            【VIP5专属自定义进服提醒】<br>
+            【VIP5专属私人地皮】<br>
+            【龙首x1】<br>
+            【金币x880000】<br>
+            【赠送450晶核源点(如有VIP4则加送数量为150)】
+        </div>
+        <div class="product-footer">
+            <button class="buy-btn" data-name="VIP4→VIP5" data-price="99.9">购买</button>
+            <div class="product-price" data-original-price="99.9">99.9¥</div>
+        </div>
+    </div>
+    <div class="product-card" data-category="VIP">
+        <div class="product-name">VIP5→VIP6</div>
+        <div class="product-content">
+            【包含VIP5全部特权】<br>
+            【VIP6专属头顶称号】<br>
+            【VIP6专属自定义进服提醒】<br>
+            【专属私人地皮面积x2】<br>
+            【金币星泉I级解锁(每秒80金币)】<br>
+            【永久饱和buff+抗火buff】<br>
+            【金币x1880000】<br>
+            【赠送600晶核源点(如有VIP5则加送数量为150)】
+        </div>
+        <div class="product-footer">
+            <button class="buy-btn" data-name="VIP5→VIP6" data-price="149.9">购买</button>
+            <div class="product-price" data-original-price="149.9">149.9¥</div>
+        </div>
+    </div>
+    <div class="product-card" data-category="VIP">
+        <div class="product-name">VIP6→VIP7</div>
+        <div class="product-content">
+            【包含VIP6全部特权】<br>
+            【VIP7专属头顶称号】<br>
+            【VIP7专属自定义进服提醒】<br>
+            【VIP7专属自定义进服闪电特效】<br>
+            【专属私人定制矿区】<br>
+            【金币星泉II级解锁(每秒160金币)】<br>
+            【永久生命提升V】<br>
+            【金币x3880000】<br>
+            【赠送800晶核源点(如有VIP6则加送数量为200)】
+        </div>
+        <div class="product-footer">
+            <button class="buy-btn" data-name="VIP6→VIP7" data-price="199.9">购买</button>
+            <div class="product-price" data-original-price="199.9">199.9¥</div>
+        </div>
+    </div>
+    <div class="product-card" data-category="VIP">
+        <div class="product-name">VIP7→VIP8</div>
+        <div class="product-content">
+            【包含VIP7全部特权】<br>
+            【VIP8专属头顶称号】<br>
+            【VIP8专属自定义进服提醒】<br>
+            【位于本服最顶端】<br>
+            【获得QQ群管理员职位】<br>
+            【几乎满足一切需求(不损害其他玩家的合法权益)】<br>
+            【可免费赠送一个VIP3】<br>
+            【金币x8880000】<br>
+            【赠送1000晶核源点(如有VIP7则加送数量为200)】
+        </div>
+        <div class="product-footer">
+            <button class="buy-btn" data-name="VIP7→VIP8" data-price="299.9">购买</button>
+            <div class="product-price" data-original-price="299.9">299.9¥</div>
+        </div>
+    </div>
+    
+    <hr class="divider">
+    <h2 class="sub-title">VIP捆绑包【特惠】</h2>
+    <div class="product-card" data-category="VIP">
+        <div class="product-name">VIP3+VIP1捆绑包</div>
+        <div class="product-content">购买者获得VIP3,另可向一名玩家赠送VIP1(原价182.6¥)</div>
+        <div class="product-footer">
+            <button class="buy-btn" data-name="VIP3+VIP1捆绑包" data-price="169.9">购买</button>
+            <div class="product-price" data-original-price="169.9">169.9¥</div>
+        </div>
+    </div>
+    <div class="product-card" data-category="VIP">
+        <div class="product-name">VIP1礼赠包</div>
+        <div class="product-content">可向一名玩家赠送VIP1权益<br>【限制】需要当前玩家VIP等级为VIP4及以上,且只可购买一次</div>
+        <div class="product-footer">
+            <button class="buy-btn" data-name="VIP1礼赠包" data-price="9.9">购买</button>
+            <div class="product-price" data-original-price="9.9">9.9¥</div>
+        </div>
+    </div>
+    <div class="product-card" data-category="VIP">
+        <div class="product-name">VIP1免费礼赠包</div>
+        <div class="product-content">可向一名玩家赠送VIP1权益<br>【限制】需要当前玩家VIP等级为VIP6及以上,且只可购买一次</div>
+        <div class="product-footer">
+            <div></div>
+            <div class="product-price" data-original-price="0">0¥</div>
+        </div>
+    </div>
+    <div class="product-card" data-category="VIP">
+        <div class="product-name">VIP3免费礼赠包</div>
+        <div class="product-content">可向一名玩家赠送VIP3权益<br>【限制】需要当前玩家VIP等级为VIP8,且只可购买一次</div>
+        <div class="product-footer">
+            <div></div>
+            <div class="product-price" data-original-price="0">0¥</div>
+        </div>
+    </div>
+    <hr class="divider">
+    
+    
+    <h2 class="sub-title">晶核源点</h2>
+    <div class="product-card" data-category="dq">
+        <div class="product-name">100晶核源点</div>
+        <div class="product-content">晶核源点为游戏内付费道具,可用于晶核源点兑换商店,首次充值享双倍优惠<br>*已使用的晶核源点不支持退换货</div>
+        <div class="product-footer">
+            <button class="buy-btn" data-name="100晶核源点" data-price="9.9">购买</button>
+            <div class="product-price" data-original-price="9.9">9.9¥</div>
+        </div>
+    </div>
+    <div class="product-card" data-category="dq">
+        <div class="product-name">550晶核源点</div>
+        <div class="product-content">晶核源点为游戏内付费道具,可用于晶核源点兑换商店,首次充值享双倍优惠<br>*已使用的晶核源点不支持退换货</div>
+        <div class="product-footer">
+            <button class="buy-btn" data-name="550晶核源点" data-price="49.9">购买</button>
+            <div class="product-price" data-original-price="49.9">49.9¥</div>
+        </div>
+    </div>
+    <div class="product-card" data-category="dq">
+        <div class="product-name">1100晶核源点</div>
+        <div class="product-content">晶核源点为游戏内付费道具,可用于晶核源点兑换商店,首次充值可获得双倍<br>*已使用的晶核源点不支持退换货</div>
+        <div class="product-footer">
+            <button class="buy-btn" data-name="1100晶核源点" data-price="99">购买</button>
+            <div class="product-price" data-original-price="99">99¥</div>
+        </div>
+    </div>
+    <div class="product-card" data-category="dq">
+        <div class="product-name">2200晶核源点</div>
+        <div class="product-content">晶核源点为游戏内付费道具,可用于晶核源点兑换商店,首次充值享双倍优惠<br>*已使用的晶核源点不支持退换货</div>
+        <div class="product-footer">
+            <button class="buy-btn" data-name="2200晶核源点" data-price="196">购买</button>
+            <div class="product-price" data-original-price="196">196¥</div>
+        </div>
+    </div>
+    
+    <!-- 自定义晶核源点充值卡片 -->
+    <div class="product-card" data-category="dq">
+        <div class="product-name">自定义晶核源点充值</div>
+        <div class="product-content">
+            <!-- 输入框，仅接受数字，最小值为100，必须是100的倍数 -->
+            <input type="number" id="customDqInput" placeholder="请输入数量(如:500)" min="1" step="1" style="width:100%; padding:8px; margin-bottom:10px; border:2px solid #000; font-family:'GNUUnifont', monospace; font-size:14px;">
+            <!-- 实时显示价格 -->
+            <div id="customDqPrice" style="font-size:14px; color:#00a800; font-weight:bold;">价格: 0.0¥</div>
+        </div>
+        <div class="product-footer">
+            <!-- 添加到购物车按钮 -->
+            <button class="buy-btn" id="addCustomDqBtn" data-name="自定义晶核源点" data-price="0">加入购物车</button>
+            <!-- 这里显示折扣后的单价参考 -->
+            <div class="product-price" id="displayUnitPrice">0.0¥</div>
+        </div>
+    </div>    
+    <hr class="divider">
+    <h2 class="sub-title">金币礼包</h2>
+    <div class="product-card">
+        <div class="product-name">一袋金币</div>
+        <div class="product-content">内含【金币x18888】</div>
+        <div class="product-footer">
+            <button class="buy-btn" data-name="一袋金币" data-price="9">购买</button>
+            <div class="product-price" data-original-price="9.9">9¥</div>
+        </div>
+    </div>
+    <div class="product-card">
+        <div class="product-name">一盒金币</div>
+        <div class="product-content">内含【金币x120000】</div>
+        <div class="product-footer">
+            <button class="buy-btn" data-name="一盒金币" data-price="30">购买</button>
+            <div class="product-price" data-original-price="30">30¥</div>
+        </div>
+    </div>
+    <div class="product-card">
+        <div class="product-name">一箱金币</div>
+        <div class="product-content">内含【金币x450000】</div>
+        <div class="product-footer">
+            <button class="buy-btn" data-name="一箱金币" data-price="88">购买</button>
+            <div class="product-price" data-original-price="88">88¥</div>
+        </div>
+    </div>
+
+    <hr class="divider">
+    <h2 class="sub-title">BUFF专项提升</h2>
+    <div class="product-card">
+        <div class="product-name">急迫+1级</div>
+        <div class="product-content">【限制】需要当前玩家VIP等级为VIP1及以上,且上限为10级</div>
+        <div class="product-footer">
+            <button class="buy-btn" data-name="急迫+1级" data-price="39.9">购买</button>
+            <div class="product-price" data-original-price="39.9">39.9¥</div>
+        </div>
+    </div>
+    <div class="product-card">
+        <div class="product-name">急迫+3级</div>
+        <div class="product-content">【限制】需要当前玩家VIP等级为VIP1及以上,且上限为10级</div>
+        <div class="product-footer">
+            <button class="buy-btn" data-name="急迫+3级" data-price="99.9">购买</button>
+            <div class="product-price" data-original-price="99.9">99.9¥</div>
+        </div>
+    </div>
+    <div class="product-card">
+        <div class="product-name">力量II</div>
+        <div class="product-content"></div>
+        <div class="product-footer">
+            <button class="buy-btn" data-name="力量II" data-price="30">购买</button>
+            <div class="product-price" data-original-price="30">30¥</div>
+        </div>
+    </div>
+    <div class="product-card">
+        <div class="product-name">力量II→力量III</div>
+        <div class="product-content"></div>
+        <div class="product-footer">
+            <button class="buy-btn" data-name="力量II→力量III" data-price="50">购买</button>
+            <div class="product-price" data-original-price="50">50¥</div>
+        </div>
+    </div>
+    <div class="product-card">
+        <div class="product-name">力量III→力量IV</div>
+        <div class="product-content"></div>
+        <div class="product-footer">
+            <button class="buy-btn" data-name="力量III→力量IV" data-price="80">购买</button>
+            <div class="product-price" data-original-price="80">80¥</div>
+        </div>
+    </div>
+    <div class="product-card">
+        <div class="product-name">力量IV→力量V</div>
+        <div class="product-content"></div>
+        <div class="product-footer">
+            <button class="buy-btn" data-name="力量IV→力量V" data-price="99">购买</button>
+            <div class="product-price" data-original-price="99">99¥</div>
+        </div>
+    </div>
+    <div class="product-card">
+        <div class="product-name">抗性提升II</div>
+        <div class="product-content"></div>
+        <div class="product-footer">
+            <button class="buy-btn" data-name="抗性提升II" data-price="40">购买</button>
+            <div class="product-price" data-original-price="40">40¥</div>
+        </div>
+    </div>
+    <div class="product-card">
+        <div class="product-name">抗性提升II→抗性提升III</div>
+        <div class="product-content"></div>
+        <div class="product-footer">
+            <button class="buy-btn" data-name="抗性提升II→抗性提升III" data-price="70">购买</button>
+            <div class="product-price" data-original-price="70">70¥</div>
+        </div>
+    </div>
+    <div class="product-card">
+        <div class="product-name">抗性提升III→抗性提升IV</div>
+        <div class="product-content"></div>
+        <div class="product-footer">
+            <button class="buy-btn" data-name="抗性提升III→抗性提升IV" data-price="99">购买</button>
+            <div class="product-price" data-original-price="99">99¥</div>
+        </div>
+    </div>
+    <div class="product-card">
+        <div class="product-name">生命恢复I</div>
+        <div class="product-content">生命恢复I→生命恢复II</div>
+        <div class="product-footer">
+            <button class="buy-btn" data-name="生命恢复I" data-price="30">购买</button>
+            <div class="product-price" data-original-price="30">30¥</div>
+        </div>
+    </div>
+    <div class="product-card">
+        <div class="product-name">生命恢复I→生命恢复II</div>
+        <div class="product-content"></div>
+        <div class="product-footer">
+            <button class="buy-btn" data-name="生命恢复I→生命恢复II" data-price="60">购买</button>
+            <div class="product-price" data-original-price="60">60¥</div>
+        </div>
+    </div>
+    <div class="product-card">
+        <div class="product-name">生命恢复II→生命恢复III</div>
+        <div class="product-content"></div>
+        <div class="product-footer">
+            <button class="buy-btn" data-name="生命恢复II→生命恢复III" data-price="80">购买</button>
+            <div class="product-price" data-original-price="80">80¥</div>
+        </div>
+    </div>
+
+    <hr class="divider">
+    <h2 class="sub-title">杂项</h2>
+    <div class="product-card">
+        <div class="product-name">经验修补</div>
+        <div class="product-content"></div>
+        <div class="product-footer">
+            <button class="buy-btn" data-name="经验修补" data-price="8.8">购买</button>
+            <div class="product-price" data-original-price="8.8">8.8¥</div>
+        </div>
+    </div>
+    <div class="product-card">
+        <div class="product-name">鞘翅</div>
+        <div class="product-content"></div>
+        <div class="product-footer">
+            <button class="buy-btn" data-name="鞘翅" data-price="29.9">购买</button>
+            <div class="product-price" data-original-price="29.9">29.9¥</div>
+        </div>
+    </div>
+    <div class="product-card">
+        <div class="product-name">丹书铁券</div>
+        <div class="product-content">(用于抵消一次永久封禁以外的封禁/限制)</div>
+        <div class="product-footer">
+            <button class="buy-btn" data-name="丹书铁券" data-price="19.9">购买</button>
+            <div class="product-price" data-original-price="19.9">19.9¥</div>
+        </div>
+    </div>
+    <div class="product-card">
+        <div class="product-name">付费地皮(17x17)</div>
+        <div class="product-content">获得一块17x17的领土</div>
+        <div class="product-footer">
+            <button class="buy-btn" data-name="付费地皮" data-price="29">购买</button>
+            <div class="product-price" data-original-price="29">29¥</div>
+        </div>
+    </div>
+    <div class="product-card">
+        <div class="product-name">二转权限</div>
+        <div class="product-content">即刻进行第二次转生,不扣除金币与矿区等级</div>
+        <div class="product-footer">
+            <button class="buy-btn" data-name="二转权限" data-price="88">购买</button>
+            <div class="product-price" data-original-price="88">88¥</div>
+        </div>
+    </div>
+    <div class="product-card">
+        <div class="product-name">每月礼包</div>
+        <div class="product-content">
+            【当月限定徽章】<br>
+            【当月限定盾牌(图案样式)】<br>
+            【当月限定纹饰x4】<br>
+            【经验修补附魔书x2】<br>
+        </div>
+        <div class="product-footer">
+            <button class="buy-btn" data-name="每月礼包" data-price="29.9">购买</button>
+            <div class="product-price" data-original-price="29.9">29.9¥</div>
+        </div>
+    </div>
+    
+    <hr class="divider">
+    <h2 class="sub-title">购买找回</h2>
+    <div class="product-card">
+        <div class="product-name">手续费(持有原始付款记录)</div>
+        <div class="product-content">
+            理论来讲,服务器内购物品出售后将不予找回/退款<br>
+            但考虑到部分玩家更换账号的问题<br>
+            本服提供【购买找回】,让玩家可以重新获得原有待遇<br>
+            如果您持有原始付款记录,可支付6元,管理员会帮您转移内购商品<br>
+            *请注意,金币等无付款记录的商品均无法被转移<br>
+            *商品转移后,初始账号将被永久封禁<br>
+        </div>
+        <div class="product-footer">
+            <button class="buy-btn" data-name="找回手续费(有记录)" data-price="6">购买</button>
+            <div class="product-price">6¥</div>
+        </div>
+    </div>
+    
+    <div class="product-card">
+        <div class="product-name">手续费(不持有原始付款记录)</div>
+        <div class="product-content">
+            理论来讲,服务器内购物品出售后将不予找回/退款<br>
+            但考虑到部分玩家更换账号的问题<br>
+            本服提供【购买找回】,让玩家可以重新获得原有待遇<br>
+            如果您丢失了原始付款记录,可支付12元,管理员会帮您转移内购商品<br>
+            *请注意,金币等无付款记录的商品均无法被转移<br>
+            *商品转移后,初始账号将被永久封禁<br>
+        </div>
+        <div class="product-footer">
+            <button class="buy-btn" data-name="找回手续费(无记录)" data-price="12">购买</button>
+            <div class="product-price">12¥</div>
+        </div>
+    </div>
+    
+    <hr class="divider">
+    <div style="text-align: center; margin-top: 30px; color: #999; font-size: 12px;">
+        因商品性质特殊,购买后无法退款,请仔细考虑后购买<br>购买非即时到账,在购买后请留意游戏内发放物品
+    </div>
+    <div style="text-align: center; margin-top: 10px; color: #999; font-size: 12px;">
+        最终解释权归 矿域纪元服务器 所有
+    </div>
+</div>
+
+<!-- 购物车底部栏 -->
+<div class="cart-bar" id="cartBar">
+    <div class="cart-inner">
+        <div class="cart-header">
+            <div class="cart-title">已购内容：</div>
+            <div style="display:flex;align-items:center;">
+                <div class="cart-total" id="cartTotal">总价：0.0 ¥</div>
+                <button class="checkout-btn" id="checkoutBtn">去结算</button>
+            </div>
+        </div>
+        <div class="cart-list" id="cartList"></div>
+        <div class="cart-desc">仅供参考，计算时折扣已计入(如有)</div>
+    </div>
+</div>
+
+<!-- 订单弹窗 -->
+<div class="order-mask" id="orderMask">
+    <div class="order-popup">
+        <span class="order-close" id="orderClose">×</span>
+        <div class="order-title">订单确认</div>
+        <div id="orderList"></div>
+    </div>
+</div>
+
+<script>
+    // ====================== 折扣配置参数（你只需要改这里）======================
+    const DISCOUNT_CONFIG = {
+        discountType: "all", 
+        discountRate: 0.9, 
+        discountEndTime: "2026-08-31=23:59" 
+    };
+    // ========================================================================
+
+    // ====================== 购物车功能 ======================
+    let cart = [];
+    const cartBar = document.getElementById('cartBar');
+    const cartList = document.getElementById('cartList');
+    const cartTotal = document.getElementById('cartTotal');
+    const checkoutBtn = document.getElementById('checkoutBtn');
+    const orderMask = document.getElementById('orderMask');
+    const orderClose = document.getElementById('orderClose');
+    const orderList = document.getElementById('orderList');
+
+    // --- 移除结算按钮 ---
+    if (checkoutBtn) {
+        checkoutBtn.style.display = 'none';
+    }
+
+    // 关闭订单
+    orderClose.addEventListener('click', () => {
+        orderMask.classList.remove('show');
+    });
+    orderMask.addEventListener('click', (e) => {
+        if(e.target === orderMask) orderMask.classList.remove('show');
+    });
+
+    // 渲染订单
+    function renderOrder(){
+        orderList.innerHTML = '';
+        let total = 0;
+        cart.forEach(item => {
+            const realPrice = (item.price * DISCOUNT_CONFIG.discountRate).toFixed(1);
+            const row = document.createElement('div');
+            row.className = 'order-item';
+            row.innerHTML = ` 
+                <span>${item.name} ×${item.count}</span> 
+                <span>${realPrice} ¥</span> 
+            `;
+            orderList.appendChild(row);
+            total += parseFloat(realPrice) * item.count;
+        });
+        // 分割线
+        const line = document.createElement('div');
+        line.className = 'order-line';
+        orderList.appendChild(line);
+        // 合计
+        const totalRow = document.createElement('div');
+        totalRow.className = 'order-total';
+        totalRow.innerHTML = ` 
+            <span>总计</span> 
+            <span>${total.toFixed(1)} ¥</span> 
+        `;
+        orderList.appendChild(totalRow);
+    }
+
+    // 购买
+    document.querySelectorAll('.buy-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const name = btn.dataset.name;
+            const price = parseFloat(btn.dataset.price);
+            addToCart(name, price);
+        });
+    });
+
+    function addToCart(name, price) {
+        const exist = cart.find(i => i.name === name);
+        if (exist) {
+            exist.count++;
+        } else {
+            cart.push({ name, price, count: 1 });
+        }
+        renderCart();
+    }
+
+    function renderCart() {
+        cartList.innerHTML = '';
+        let total = 0;
+        cart.forEach(item => {
+            const realPrice = (item.price * DISCOUNT_CONFIG.discountRate).toFixed(1);
+            total += realPrice * item.count;
+            const el = document.createElement('div');
+            el.className = 'cart-item';
+            el.textContent = `${item.name} x${item.count}`;
+            el.addEventListener('click', () => {
+                item.count--;
+                if (item.count <= 0) {
+                    cart = cart.filter(i => i.name !== item.name);
+                }
+                renderCart();
+            });
+            cartList.appendChild(el);
+        });
+        cartTotal.textContent = `总价：${total.toFixed(1)} ¥`;
+        cartBar.classList.toggle('show', cart.length > 0);
+    }
+
+    // ====================== 弹幕功能 ======================
+    const messages = [
+        ["不灵的赌瘾", "VIP8"],
+        ["一串往往", "VIP1"],
+        ["好猫咪老师", "VIP6"],
+        ["永劫_无光", "鞘翅x1"],
+        ["永劫_无光", "四月礼包x2"],
+        ["永劫_无光", "VIP3"],
+        ["永劫_无光", "VIP5"],
+        ["散人直立巨人", "VIP3"],
+        ["程程光光", "VIP3"],
+        ["妄念", "VIP8"],
+        ["小明大明小刚", "VIP1"],
+        ["Prism", "VIP1"],
+        ["VR罒斩道彡蚂蚁", "VIP3"],
+        ["Prism", "鞘翅x1"],
+        ["_AL76_", "VIP1"],
+        ["_AL76_", "鞘翅x1"],
+        ["最有气质的肝", "VIP5"],
+        ["请叫我表哥乞", "VIP3"],
+        ["lvji", "VIP3"],
+        ["小小花花呗", "VIP7"],
+        ["一串往往", "VIP4"],
+        ["满家星火", "VIP1"]
+    ];
+    const board = document.getElementById("board");
+    const speed = 3;
+    const gapMin = 800;
+    const gapMax = 2500;
+
+    function createDanmaku(text) {
+        const el = document.createElement("div");
+        el.className = "danmaku";
+        el.textContent = text;
+        const boardHeight = board.clientHeight;
+        const randomY = 20 + Math.random() * (boardHeight - 50);
+        el.style.top = `${randomY}px`;
+        board.appendChild(el);
+        const width = el.offsetWidth;
+        const duration = (board.offsetWidth + width) / (speed * 50);
+        el.style.transition = `transform ${duration}s linear`;
+        setTimeout(() => {
+            el.style.transform = "translateX(100vw)";
+        }, 20);
+        setTimeout(() => el.remove(), duration * 1000);
+    }
+
+    function loop() {
+        const [name, item] = messages[Math.floor(Math.random() * messages.length)];
+        createDanmaku(`${name} 购买了 ${item}`);
+        const delay = gapMin + Math.random() * (gapMax - gapMin);
+        setTimeout(loop, delay);
+    }
+    loop();
+
+    // ====================== 晶核源点自定义充值功能 (允许1的倍数) ======================
+    const customInput = document.getElementById('customDqInput');
+    const customPriceDisplay = document.getElementById('customDqPrice');
+    const addCustomBtn = document.getElementById('addCustomDqBtn');
+    const displayUnitPrice = document.getElementById('displayUnitPrice');
+
+    // 修改点：基础单价配置
+    // 原逻辑是 100个=9.9元，即 1个 = 0.099元
+    const PRICE_PER_UNIT = 0.099; 
+
+    // 初始化
+    window.onload = function() {
+        updateUnitPriceDisplay();
+        
+        // 原有的折扣逻辑 (保持原有功能)
+        const [dateStr, timeStr] = DISCOUNT_CONFIG.discountEndTime.split('=');
+        const endDate = new Date(`${dateStr} ${timeStr}`);
+        const now = new Date();
+        
+        // 注意：这里只处理显示，不阻止交互
+        if(now <= endDate) {
+            const formatTime = `${endDate.getFullYear()}-${(endDate.getMonth()+1).toString().padStart(2,'0')}-${endDate.getDate().toString().padStart(2,'0')} ${endDate.getHours().toString().padStart(2,'0')}:${endDate.getMinutes().toString().padStart(2,'0')}`;
+            const cards = document.querySelectorAll('.product-card');
+            cards.forEach(card => {
+                const priceEl = card.querySelector('.product-price');
+                if (!priceEl) return;
+                const originalPrice = parseFloat(priceEl.dataset.originalPrice);
+                const cardCategory = card.dataset.category;
+                let needDiscount = false;
+                if(DISCOUNT_CONFIG.discountType === 'all') needDiscount = true;
+                if(DISCOUNT_CONFIG.discountType === 'VIP' && cardCategory === 'VIP') needDiscount = true;
+                if(needDiscount && originalPrice > 0) {
+                    const discountPrice = (originalPrice * DISCOUNT_CONFIG.discountRate).toFixed(1);
+                    priceEl.innerHTML = ` 
+                        <span class="original-price">${originalPrice}¥</span> 
+                        <span class="discount-price">${discountPrice}¥</span> 
+                    `;
+                    const timeTag = document.createElement('div');
+                    timeTag.className = 'discount-end-time';
+                    timeTag.textContent = `至 ${formatTime}`;
+                    card.appendChild(timeTag);
+                }
+            });
+        }
+        renderCart();
+    };
+
+    // 更新单价显示 (显示 "每1个" 的价格)
+    function updateUnitPriceDisplay() {
+        if (!displayUnitPrice) return;
+        const now = new Date();
+        const endDate = new Date(DISCOUNT_CONFIG.discountEndTime.replace(/=/g, ' '));
+        const isDiscountActive = now < endDate;
+        const unitPrice = isDiscountActive ? (PRICE_PER_UNIT * DISCOUNT_CONFIG.discountRate).toFixed(3) : PRICE_PER_UNIT.toFixed(3);
+        displayUnitPrice.textContent = `${unitPrice}¥ (每1个)`;
+    }
+
+    // 计算价格 (核心修改)
+    function calculateCustomPrice() {
+        if (!customInput || !customPriceDisplay || !addCustomBtn) return;
+        
+        const quantity = parseInt(customInput.value) || 0;
+        
+        // 修改点：最小值限制调整为 1
+        if (quantity < 1) {
+            customPriceDisplay.textContent = "价格: 0.0¥";
+            addCustomBtn.setAttribute('data-price', '0');
+            return;
+        }
+
+        // 修改点：计算逻辑改为 quantity * 0.099
+        const baseTotal = quantity * PRICE_PER_UNIT;
+        
+        // 判断是否应用折扣
+        const now = new Date();
+        const endDate = new Date(DISCOUNT_CONFIG.discountEndTime.replace(/=/g, ' '));
+        const finalPrice = now < endDate ? (baseTotal * DISCOUNT_CONFIG.discountRate) : baseTotal;
+        
+        // 更新UI
+        customPriceDisplay.textContent = `价格: ${finalPrice.toFixed(1)}¥`;
+        addCustomBtn.setAttribute('data-price', finalPrice.toFixed(1));
+    }
+
+    // 监听输入框
+    customInput?.addEventListener('input', calculateCustomPrice);
+
+    // 加入购物车
+    addCustomBtn?.addEventListener('click', function() {
+        const quantity = parseInt(customInput.value) || 0;
+        const price = parseFloat(addCustomBtn.getAttribute('data-price'));
+        
+        // 修改点：提示语调整为至少1个
+        if (quantity < 1) {
+            alert(`请输入至少1个！`);
+            return;
+        }
+        
+        const name = `自定义晶核源点 x${quantity}`;
+        addToCart(name, price);
+    });
+</script>
+</body>
+</html>
