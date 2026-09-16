@@ -8,11 +8,11 @@
         /* 基础重置 */
         @font-face {
             font-family: 'GNUUnifont';
-            src: url('https://github.com/TeamXiaoxin/TeamXiaoxin.github.io/blob/main/BoutiqueBitmap9x9_1.9.ttf') format('truetype');
+            src: url('https://github.com/TeamXiaoxin/TeamXiaoxin.github.io/blob/main/GNUUnifont9FullHintInstrUCSUR.ttf') format('truetype');
             font-weight: normal;
             font-style: normal;
         }
-        
+
         * {
             margin: 0;
             padding: 0;
@@ -100,6 +100,62 @@
             margin-left: 5px;
             vertical-align: middle;
             opacity: 0.7;
+            display: inline-block;
+            transition: transform 0.3s;
+        }
+
+        .dropdown:hover .has-dropdown::after {
+            transform: rotate(180deg);
+        }
+
+        /* ===== 下拉菜单 ===== */
+        .dropdown {
+            position: relative;
+            /* 透明的底部延长区，避免鼠标移到菜单时 hover 断掉 */
+            padding-bottom: 16px;
+            margin-bottom: -16px;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(-8px);
+            min-width: 170px;
+            padding: 6px 0;
+            background: rgba(12, 20, 12, 0.92);
+            border: 1px solid rgba(255, 140, 0, 0.35);
+            border-radius: 10px;
+            backdrop-filter: blur(6px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+            /* 默认隐藏 */
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s;
+        }
+
+        .dropdown:hover .dropdown-menu,
+        .dropdown:focus-within .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .dropdown-menu a {
+            display: block;
+            padding: 11px 20px;
+            white-space: nowrap;
+            font-size: 14px;
+            color: white;
+            letter-spacing: 1.5px;
+            transition: background 0.25s, color 0.25s;
+        }
+
+        .dropdown-menu a:hover {
+            background: rgba(255, 140, 0, 0.15);
+            color: #ff8c00;
         }
 
         /* 主要内容区域 */
@@ -159,6 +215,9 @@
                 flex-wrap: wrap;
                 justify-content: center;
             }
+            .dropdown-menu {
+                left: 50%;
+            }
             main {
                 padding: 20px;
                 text-align: center;
@@ -181,7 +240,14 @@
             XT Server 小新服务器
         </div>
         <div class="nav-links">
-            <a href="https://xtmc.neocities.org">矿域纪元分页面</a>
+            <!-- 带下拉的导航项 -->
+            <div class="dropdown">
+                <a href="https://xtmc.neocities.org" class="has-dropdown">矿域纪元分页面</a>
+                <div class="dropdown-menu">
+                    <a href="https://teamxiaoxin.github.io/recharge" target="_blank" rel="noopener">赞助表</a>
+                    <!-- 以后想加更多子项，照着上面这行复制即可 -->
+                </div>
+            </div>
             <a href="#">???</a>
         </div>
     </nav>
