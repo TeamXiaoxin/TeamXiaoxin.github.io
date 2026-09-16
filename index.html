@@ -13,7 +13,7 @@
         /* 基础重置 */
         @font-face {
             font-family: 'GNUUnifont';
-            src: url('https://TeamXiaoxin.github.io/GNUUnifont9FullHintInstrUCSUR.ttf') format('truetype');
+            src: url('https://github.com/TeamXiaoxin/TeamXiaoxin.github.io/blob/main/GNUUnifont9FullHintInstrUCSUR.ttf') format('truetype');
             font-weight: normal;
             font-style: normal;
         }
@@ -128,11 +128,13 @@
             transform: translateX(-50%) translateY(-8px);
             min-width: 170px;
             padding: 6px 0;
-            background: rgba(12, 20, 12, 0.92);
-            border: 1px solid rgba(255, 140, 0, 0.35);
+            /* 半透明白底 + 白色边框 */
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.65);
             border-radius: 10px;
-            backdrop-filter: blur(6px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
             /* 默认隐藏 */
             opacity: 0;
             visibility: hidden;
@@ -153,14 +155,15 @@
             padding: 11px 20px;
             white-space: nowrap;
             font-size: 14px;
-            color: white;
+            color: #ffffff;
             letter-spacing: 1.5px;
             transition: background 0.25s, color 0.25s;
         }
 
+        /* hover：文字与底色一同变灰 */
         .dropdown-menu a:hover {
-            background: rgba(255, 140, 0, 0.15);
-            color: #ff8c0000;
+            background: rgba(255, 255, 255, 0.18);
+            color: #9a9a9a;
         }
 
         /* 主要内容区域 */
@@ -192,7 +195,7 @@
         .btn-primary {
             display: inline-block;
             padding: 15px 35px;
-            border: 3px solid #ffffff;
+            border: 1px solid #ff8c00; /* 橙色边框 */
             color: white;
             text-decoration: none;
             font-size: 16px;
@@ -203,7 +206,7 @@
         }
 
         .btn-primary:hover {
-            background-color: #1f1e33AA;
+            background-color: #ff8c00; /* 悬停填充橙色 */
             color: white;
             box-shadow: 0 0 15px rgba(255, 140, 0, 0.4);
         }
@@ -244,17 +247,17 @@
         <div class="logo">
             XT Server 小新服务器
         </div>
-
         <div class="nav-links">
-        <a href="https://xtmc.neocities.org">矿域纪元原官网</a>
+        <a href="https://xtmc.neocities.org">原官网</a>
             <!-- 带下拉的导航项 -->
             <div class="dropdown">
-                <a href="" class="has-dropdown">矿域纪元分页面</a>
+                <a href="" class="has-dropdown">矿域纪元</a>
                 <div class="dropdown-menu">
                     <a href="https://teamxiaoxin.github.io/recharge" target="_blank" rel="noopener">赞助表</a>
+                    <!-- 以后想加更多子项，照着上面这行复制即可 -->
                 </div>
             </div>
-            <a href="nothing here but coming s∞n">???</a>
+            <a href="bm90aGluZyBoZXJlIGJ1dCBjb21pbmcgc29vbg==">???</a>
         </div>
     </nav>
 
